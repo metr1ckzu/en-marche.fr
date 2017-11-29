@@ -4,10 +4,13 @@ namespace AppBundle\Controller\EnMarche;
 
 use AppBundle\Controller\CanaryControllerTrait;
 use AppBundle\Entity\CitizenProject;
+use AppBundle\Entity\Committee;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -44,5 +47,34 @@ class CitizenProjectController extends Controller
         $this->disableInProduction();
 
         return new Response();
+    }
+
+    /**
+     * @Route("/comite/autocompletion",
+     *     name="app_citizen_project_committee_autocomplete",
+     *     condition="request.isXmlHttpRequest()"
+     * )
+     * @Method("GET")
+     * @Security("is_granted('IS_AUTHENTICATED_FULLY')")
+     */
+    public function committeeAutocompleteAction(Request $request)
+    {
+        if (!$term = $request->query->get('term')) {
+            return new JsonResponse([], Response::HTTP_BAD_REQUEST);
+        }
+
+        $committees = $this
+            ->getDoctrine()
+            ->getRepository(Committee::class)
+            ->findByPartialName($term);
+
+        foreach ($committees as $committee) {
+            $result[] = [
+                'uuid' => $committee->getUuid()->toString(),
+                'name' => $committee->getName(),
+            ];
+        }
+
+        return new JsonResponse($result ?? []);
     }
 }
