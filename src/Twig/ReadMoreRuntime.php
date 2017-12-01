@@ -5,7 +5,7 @@ namespace AppBundle\Twig;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFilter;
 
-class ReadMoreExtension extends AbstractExtension
+class ReadMoreRuntime extends AbstractExtension
 {
     public function getFilters()
     {
