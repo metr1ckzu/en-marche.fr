@@ -38,7 +38,7 @@ class CoordinatorManagedArea
     /**
      * @var string
      *
-     * @ORM\Column
+     * @ORM\Column(nullable=true)
      */
     private $sector;
 
