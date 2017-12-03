@@ -457,9 +457,9 @@ class CommitteeManager
         }
     }
 
-    public function getCoordinatorCommittees(Adherent $coordinator, CommitteeFilter $filters): array
+    public function getCoordinatorCommittees(Adherent $coordinator, CommitteeFilter $filter): array
     {
-        $committees = $this->getCommitteeRepository()->findManagedByCoordinator($coordinator, $filters);
+        $committees = $this->getCommitteeRepository()->findManagedByCoordinator($coordinator, $filter);
 
         foreach ($committees as $committee) {
             $creator = $this->getCommitteeCreator($committee);

@@ -12,7 +12,7 @@ abstract class AbstractCoordinatorAreaFilter
     public const PER_PAGE = 20;
 
     private const PARAMETER_OFFSET = 'o';
-    private const PARAMETER_STATUS = 's';
+    public const PARAMETER_STATUS = 's';
 
     private $status;
     protected $offset = 0;

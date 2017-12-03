@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller\EnMarche\Coordinator;
 
+use AppBundle\Coordinator\Filter\AbstractCoordinatorAreaFilter;
 use AppBundle\Coordinator\Filter\CitizenProjectFilter;
 use AppBundle\Entity\CitizenProject;
 use AppBundle\Exception\BaseGroupException;
@@ -22,8 +23,9 @@ class CoordinatorCitizenProjectController extends Controller
 {
     /**
      * @Route(path="/list", name="app_coordinator_citizen_project")
+     * @Method("GET")
      */
-    public function listAction(Request $request)
+    public function listAction(Request $request): Response
     {
         try {
             $filters = CitizenProjectFilter::fromQueryString($request);
@@ -86,6 +88,8 @@ class CoordinatorCitizenProjectController extends Controller
             }
         }
 
-        return $this->redirectToRoute('app_coordinator_citizen_project', ['s' => CitizenProject::PENDING]);
+        return $this->redirectToRoute('app_coordinator_citizen_project', [
+            AbstractCoordinatorAreaFilter::PARAMETER_STATUS => CitizenProject::PENDING,
+        ]);
     }
 }
