@@ -28,14 +28,14 @@
                 {% block coordinator_content %}{% endblock %}
 
                 <div class="text--center text--gray">
-                    {% set current_page = (filters.offset / constant('PER_PAGE', filters))|round(0, 'ceil') + 1 %}
-                    {% set last_page = (filters.count / constant('PER_PAGE', filters))|round(0, 'ceil') %}
+                    {% set current_page = (filter.offset / constant('PER_PAGE', filter))|round(0, 'ceil') + 1 %}
+                    {% set last_page = (filter.count / constant('PER_PAGE', filter))|round(0, 'ceil') %}
 
-                    {% if filters.offset > 0 %}
-                        <a href="{{ path(coordinator_path) ~ filters.queryStringForOffset(0) }}" class="btn btn--small">
+                    {% if filter.offset > 0 %}
+                        <a href="{{ path(coordinator_path) ~ filter.queryStringForOffset(0) }}" class="btn btn--small">
                             Première
                         </a>
-                        <a href="{{ path(coordinator_path) ~ filters.previousPageQueryString }}" class="btn btn--small">
+                        <a href="{{ path(coordinator_path) ~ filter.previousPageQueryString }}" class="btn btn--small">
                             Précédente
                         </a>
                     {% endif %}
@@ -44,11 +44,11 @@
                         <span class="text--summary">Page {{ current_page }} / {{ last_page }}</span>
                     {% endif %}
 
-                    {% if filters.offset + constant('PER_PAGE', filters) < filters.count %}
-                        <a href="{{ path(coordinator_path) ~ filters.nextPageQueryString }}" class="btn btn--small">
+                    {% if filter.offset + constant('PER_PAGE', filter) < filter.count %}
+                        <a href="{{ path(coordinator_path) ~ filter.nextPageQueryString }}" class="btn btn--small">
                             Suivante
                         </a>
-                        <a href="{{ path(coordinator_path) ~ filters.queryStringForOffset((last_page - 1) * constant('PER_PAGE', filters)) }}" class="btn btn--small">
+                        <a href="{{ path(coordinator_path) ~ filter.queryStringForOffset((last_page - 1) * constant('PER_PAGE', filter)) }}" class="btn btn--small">
                             Dernière
                         </a>
                     {% endif %}

@@ -8,14 +8,14 @@ use Doctrine\ORM\Mapping as ORM;
 trait CoordinatorAreaTrait
 {
     /**
-     * @var string
+     * @var string|null
      *
      * @ORM\Column(type="text", nullable=true)
      */
     private $coordinatorComment;
 
     /**
-     * @var Adherent
+     * @var Adherent|null
      */
     private $creator;
 

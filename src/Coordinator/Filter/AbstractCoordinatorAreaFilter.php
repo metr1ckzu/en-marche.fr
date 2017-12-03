@@ -10,15 +10,14 @@ use Symfony\Component\HttpFoundation\Request;
 abstract class AbstractCoordinatorAreaFilter
 {
     public const PER_PAGE = 20;
-
-    private const PARAMETER_OFFSET = 'o';
     public const PARAMETER_STATUS = 's';
+    private const PARAMETER_OFFSET = 'o';
 
-    private $status;
-    protected $offset = 0;
-    private $count = 0;
     /** @var Adherent */
     protected $coordinator;
+    protected $offset = 0;
+    private $count = 0;
+    private $status;
 
     final private function __construct()
     {
@@ -54,12 +53,12 @@ abstract class AbstractCoordinatorAreaFilter
 
     public static function fromQueryString(Request $request)
     {
-        $filters = new static();
+        $filter = new static();
 
-        $filters->setStatus($request->query->get(self::PARAMETER_STATUS, BaseGroup::PENDING));
-        $filters->setOffset($request->query->getInt(self::PARAMETER_OFFSET));
+        $filter->setStatus($request->query->get(self::PARAMETER_STATUS, BaseGroup::PENDING));
+        $filter->setOffset($request->query->getInt(self::PARAMETER_OFFSET));
 
-        return $filters;
+        return $filter;
     }
 
     public function setStatus(string $status): void
@@ -114,35 +113,12 @@ abstract class AbstractCoordinatorAreaFilter
         $this->coordinator = $coordinator;
     }
 
-    private function updateCount(QueryBuilder $qb, string $alias): void
-    {
-        $qbCount = clone $qb;
-
-        $count = $qbCount
-            ->select(sprintf('count(%s)', $alias))
-            ->setMaxResults(null)
-            ->setFirstResult(null)
-            ->getQuery()
-            ->getSingleScalarResult();
-
-        $this->setCount($count);
-    }
-
     public function getQueryStringForOffset(?int $offset): string
     {
         $parameters = $this->getQueryStringParameters();
         $parameters[self::PARAMETER_OFFSET] = $offset ?? $this->offset;
 
         return '?'.http_build_query($parameters);
-    }
-
-    protected function getQueryStringParameters(): array
-    {
-        if ($this->status) {
-            $parameters[self::PARAMETER_STATUS] = $this->status;
-        }
-
-        return $parameters ?? [];
     }
 
     public function getPreviousPageQueryString(): string
@@ -160,6 +136,15 @@ abstract class AbstractCoordinatorAreaFilter
     public function getOffset(): int
     {
         return $this->offset;
+    }
+
+    protected function getQueryStringParameters(): array
+    {
+        if ($this->status) {
+            $parameters[self::PARAMETER_STATUS] = $this->status;
+        }
+
+        return $parameters ?? [];
     }
 
     private function applyGeoFilter(QueryBuilder $qb, string $alias): void
@@ -185,5 +170,19 @@ abstract class AbstractCoordinatorAreaFilter
         }
 
         $qb->andWhere($codesFilter);
+    }
+
+    private function updateCount(QueryBuilder $qb, string $alias): void
+    {
+        $qbCount = clone $qb;
+
+        $count = $qbCount
+            ->select(sprintf('count(%s)', $alias))
+            ->setMaxResults(null)
+            ->setFirstResult(null)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $this->setCount($count);
     }
 }

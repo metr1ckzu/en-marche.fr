@@ -28,15 +28,17 @@ class CoordinatorCitizenProjectController extends Controller
     public function listAction(Request $request): Response
     {
         try {
-            $filters = CitizenProjectFilter::fromQueryString($request);
+            $filter = CitizenProjectFilter::fromQueryString($request);
         } catch (\UnexpectedValueException $e) {
             throw new BadRequestHttpException('Unexpected Citizen Project status in the query string.', $e);
         }
 
-        $results = $this->get('app.citizen_project.manager')->getCoordinatorCitizenProjects($this->getUser(), $filters);
+        $results = $this->get('app.citizen_project.manager')->getCoordinatorCitizenProjects($this->getUser(), $filter);
 
         $forms = [];
-        array_walk($results, function (CitizenProject $project) use (&$forms, $filters) {
+        $citizenProjectStatus = $filter->getStatus();
+
+        array_walk($results, function (CitizenProject $project) use (&$forms, $citizenProjectStatus) {
             $forms[$project->getId()] = $this
                 ->createForm(CoordinatorAreaType::class, $project, [
                     'data_class' => CitizenProject::class,
@@ -44,14 +46,14 @@ class CoordinatorCitizenProjectController extends Controller
                         'uuid' => $project->getUuid(),
                         'slug' => $project->getSlug(),
                     ]),
-                    'status' => $filters->getStatus(),
+                    'status' => $citizenProjectStatus,
                 ])
                 ->createView();
         });
 
         return $this->render('coordinator/citizen_project.html.twig', [
             'results' => $results,
-            'filters' => $filters,
+            'filter' => $filter,
             'forms' => $forms,
         ]);
     }
@@ -73,14 +75,12 @@ class CoordinatorCitizenProjectController extends Controller
                 if ($form->get('refuse')->isClicked()) {
                     $this->get('app.citizen_project.authority')->preRefuse($project);
                     $this->addFlash('info', 'Merci. Votre appréciation a été transmise à nos équipes.');
-                }
-
-                if ($form->get('accept')->isClicked()) {
+                } elseif ($form->get('accept')->isClicked()) {
                     $this->get('app.citizen_project.authority')->preApprove($project);
                     $this->addFlash('info', 'Merci. Votre appréciation a été transmise à nos équipes.');
                 }
             } catch (BaseGroupException $exception) {
-                throw $this->createNotFoundException(sprintf('Citizen project %u has already been treated by an administrator.', $project->getId()), $exception);
+                $this->addFlash('info', sprintf('Le projet citoyen #%d a déjà été traité par un administrateur', $project->getId()));
             }
         } else {
             foreach ($form->getErrors(true) as $error) {

@@ -977,15 +977,13 @@ class Adherent implements UserInterface, GeoPointInterface, EncoderAwareInterfac
 
     public function removeCoordinatorManagedArea(CoordinatorManagedArea $area): void
     {
-        if ($this->coordinatorManagedAreas->contains($area)) {
-            $this->coordinatorManagedAreas->removeElement($area);
-        }
+        $this->coordinatorManagedAreas->removeElement($area);
     }
 
     public function getCoordinatorManagedAreaCodesAsString(): string
     {
-        return implode(', ', $this->coordinatorManagedAreas->map(function (CoordinatorManagedArea $area) {
+        return implode(', ', array_map(function (CoordinatorManagedArea $area) {
             return $area->getCodesAsString();
-        })->toArray());
+        }, $this->coordinatorManagedAreas->toArray()));
     }
 }

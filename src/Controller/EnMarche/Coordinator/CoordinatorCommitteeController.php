@@ -27,12 +27,12 @@ class CoordinatorCommitteeController extends Controller
     public function committeesAction(Request $request): Response
     {
         try {
-            $filters = CommitteeFilter::fromQueryString($request);
+            $filter = CommitteeFilter::fromQueryString($request);
         } catch (\UnexpectedValueException $e) {
             throw new BadRequestHttpException('Unexpected committee request status in the query string.', $e);
         }
 
-        $committees = $this->get('app.committee.manager')->getCoordinatorCommittees($this->getUser(), $filters);
+        $committees = $this->get('app.committee.manager')->getCoordinatorCommittees($this->getUser(), $filter);
 
         $forms = [];
         foreach ($committees as $committee) {
@@ -49,7 +49,7 @@ class CoordinatorCommitteeController extends Controller
         return $this->render('coordinator/committees.html.twig', [
             'results' => $committees,
             'forms' => $forms,
-            'filters' => $filters,
+            'filter' => $filter,
         ]);
     }
 
@@ -71,14 +71,12 @@ class CoordinatorCommitteeController extends Controller
                 if ($form->get('refuse')->isClicked()) {
                     $this->get('app.committee.authority')->preRefuse($committee);
                     $this->addFlash('info', 'Merci. Votre appréciation a été transmise à nos équipes.');
-                }
-
-                if ($form->get('accept')->isClicked()) {
+                } elseif ($form->get('accept')->isClicked()) {
                     $this->get('app.committee.authority')->preApprove($committee);
                     $this->addFlash('info', 'Merci. Votre appréciation a été transmise à nos équipes.');
                 }
             } catch (BaseGroupException $exception) {
-                throw $this->createNotFoundException(sprintf('Committee %u has already been treated by an administrator.', $committee->getId()), $exception);
+                $this->addFlash('info', sprintf('Le comité #%d a déjà été traité par un administrateur', $committee->getId()));
             }
         } else {
             foreach ($form->getErrors(true) as $error) {

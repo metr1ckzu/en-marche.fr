@@ -4,7 +4,6 @@ namespace AppBundle\Form\EventListener;
 
 use AppBundle\Entity\Adherent;
 use AppBundle\Entity\CoordinatorManagedArea;
-use Doctrine\Common\Collections\ArrayCollection;
 use Sonata\AdminBundle\Form\Type\CollectionType;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormEvent;
@@ -16,7 +15,6 @@ class CoordinatorManagedAreaListener implements EventSubscriberInterface
     {
         return [
             FormEvents::PRE_SET_DATA => 'onPreSetData',
-            FormEvents::POST_SET_DATA => 'onPostSetData',
             FormEvents::POST_SUBMIT => 'onPostSubmit',
         ];
     }
@@ -24,6 +22,9 @@ class CoordinatorManagedAreaListener implements EventSubscriberInterface
     /**
      * If the adherent has more than 1 coordinator managed area, then need to
      * allow the delete action on CollectionType form.
+     *
+     * If the adherent has any coordinator managed area, then need to
+     * add an empty coordinator managed area for avoiding empty form.
      *
      * @param FormEvent $event
      */
@@ -46,29 +47,8 @@ class CoordinatorManagedAreaListener implements EventSubscriberInterface
             );
 
             $form->add('coordinatorManagedAreas', CollectionType::class, $fieldOptions);
-        }
-    }
-
-    /**
-     * If the adherent has any coordinator managed area, then
-     * need to add an empty coordinator managed area for avoiding empty form.
-     *
-     * @param FormEvent $event
-     */
-    public function onPostSetData(FormEvent $event): void
-    {
-        $form = $event->getForm();
-        /** @var Adherent $adherent */
-        $adherent = $event->getData();
-
-        if (!$adherent instanceof Adherent) {
-            return;
-        }
-
-        if (0 === $adherent->getCoordinatorManagedAreas()->count()) {
-            $form->get('coordinatorManagedAreas')->setData(
-                new ArrayCollection([new CoordinatorManagedArea()])
-            );
+        } elseif (0 === $adherent->getCoordinatorManagedAreas()->count()) {
+            $adherent->addCoordinatorManagedArea(new CoordinatorManagedArea());
         }
     }
 

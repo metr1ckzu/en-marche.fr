@@ -178,7 +178,7 @@ class CommitteeRepository extends EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-    public function findManagedByCoordinator(Adherent $coordinator, CommitteeFilter $filters): array
+    public function findManagedByCoordinator(Adherent $coordinator, CommitteeFilter $filter): array
     {
         if (!$coordinator->isCoordinatorCommitteeSector()) {
             return [];
@@ -189,8 +189,8 @@ class CommitteeRepository extends EntityRepository
             ->orderBy('c.name', 'ASC')
             ->orderBy('c.createdAt', 'DESC');
 
-        $filters->setCoordinator($coordinator);
-        $filters->apply($qb, 'c');
+        $filter->setCoordinator($coordinator);
+        $filter->apply($qb, 'c');
 
         return $qb->getQuery()->getResult();
     }

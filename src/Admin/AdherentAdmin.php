@@ -83,7 +83,7 @@ class AdherentAdmin extends AbstractAdmin
                     'label' => 'Est référent ?',
                 ])
                 ->add('managedAreaCodesAsString', null, [
-                    'label' => 'Codes des zones gérés',
+                    'label' => 'coordinator.label.codes',
                 ])
                 ->add('managedAreaMarkerLatitude', null, [
                     'label' => 'Latitude du point sur la carte',
@@ -97,7 +97,7 @@ class AdherentAdmin extends AbstractAdmin
                     'label' => 'Est coordinateur ?',
                 ])
                 ->add('coordinatorManagedAreaCodesAsString', null, [
-                    'label' => 'Codes des zones gérés',
+                    'label' => 'coordinator.label.codes',
                 ])
             ->end()
             ->with('Responsable procuration', ['class' => 'col-md-3'])
@@ -105,7 +105,7 @@ class AdherentAdmin extends AbstractAdmin
                     'label' => 'Est responsable procuration ?',
                 ])
                 ->add('procurationManagedAreaCodesAsString', null, [
-                    'label' => 'Codes des zones gérés',
+                    'label' => 'coordinator.label.codes',
                 ])
             ->end()
             ->with('Compte', ['class' => 'col-md-6'])
@@ -205,7 +205,7 @@ class AdherentAdmin extends AbstractAdmin
             ->end()
             ->with('Référent', ['class' => 'col-md-6'])
                 ->add('managedArea.codesAsString', TextType::class, [
-                    'label' => 'Codes des zones gérés',
+                    'label' => 'coordinator.label.codes',
                     'required' => false,
                     'help' => 'Laisser vide si l\'adhérent n\'est pas référent. '.
                         'Utiliser les codes de pays (FR, DE, ...) ou des préfixes de codes postaux.',
@@ -233,7 +233,7 @@ class AdherentAdmin extends AbstractAdmin
             ->end()
             ->with('Responsable procuration', ['class' => 'col-md-3'])
                 ->add('procurationManagedAreaCodesAsString', TextType::class, [
-                    'label' => 'Codes des zones gérés',
+                    'label' => 'coordinator.label.codes',
                     'required' => false,
                     'help' => 'Laisser vide si l\'adhérent n\'est pas responsable procuration. '.
                         'Utiliser les codes de pays (FR, DE, ...) ou des préfixes de codes postaux.',
