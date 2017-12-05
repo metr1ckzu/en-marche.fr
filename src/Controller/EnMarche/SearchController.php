@@ -7,6 +7,7 @@ use AppBundle\Entity\EntityPostAddressTrait;
 use AppBundle\Entity\EventCategory;
 use AppBundle\Geocoder\Exception\GeocodingException;
 use AppBundle\Search\SearchParametersFilter;
+use AppBundle\Search\SearchResultsProvidersManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -31,7 +32,7 @@ class SearchController extends Controller
         }
 
         try {
-            $results = $this->get('app.search.search_results_providers_manager')->find($search);
+            $results = $this->get(SearchResultsProvidersManager::class)->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }
@@ -57,7 +58,7 @@ class SearchController extends Controller
         $search = $this->getSearch($request);
 
         try {
-            $results = $this->get('app.search.search_results_providers_manager')->find($search);
+            $results = $this->get(SearchResultsProvidersManager::class)->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }
@@ -84,7 +85,7 @@ class SearchController extends Controller
         $search = $this->getSearch($request);
 
         try {
-            $results = $this->get('app.search.search_results_providers_manager')->find($search);
+            $results = $this->get(SearchResultsProvidersManager::class)->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }
@@ -107,7 +108,7 @@ class SearchController extends Controller
         $search = $this->getSearch($request);
 
         try {
-            $results = $this->get('app.search.search_results_providers_manager')->find($search);
+            $results = $this->get(SearchResultsProvidersManager::class)->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }

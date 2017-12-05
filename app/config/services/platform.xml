@@ -427,29 +427,29 @@
             <argument type="service" id="cache.app"/>
         </service>
 
-        <service id="app.search.search_results_providers_manager" class="AppBundle\Search\SearchResultsProvidersManager">
+        <service id="AppBundle\Search\SearchResultsProvidersManager">
             <call method="addProvider">
-                <argument type="service" id="app.search.search_results_provider.citizen_project"/>
+                <argument type="service" id="AppBundle\Search\CommitteeSearchResultsProvider"/>
             </call>
 
             <call method="addProvider">
-                <argument type="service" id="app.search.search_results_provider.committee"/>
+                <argument type="service" id="AppBundle\Search\EventSearchResultsProvider"/>
             </call>
 
             <call method="addProvider">
-                <argument type="service" id="app.search.search_results_provider.event"/>
+                <argument type="service" id="AppBundle\Search\CitizenProjectSearchResultsProvider"/>
             </call>
         </service>
 
-        <service id="app.search.search_results_provider.committee" class="AppBundle\Search\CommitteeSearchResultsProvider" public="false">
+        <service id="AppBundle\Search\CommitteeSearchResultsProvider" public="false">
             <argument type="service" id="app.repository.committee"/>
         </service>
 
-        <service id="app.search.search_results_provider.event" class="AppBundle\Search\EventSearchResultsProvider" public="false">
+        <service id="AppBundle\Search\EventSearchResultsProvider" public="false">
             <argument type="service" id="app.repository.event"/>
         </service>
 
-        <service id="app.search.search_results_provider.citizen_project" class="AppBundle\Search\CitizenProjectSearchResultsProvider" public="false">
+        <service id="AppBundle\Search\CitizenProjectSearchResultsProvider" public="false">
             <argument type="service" id="app.repository.citizen_project"/>
             <argument type="service" id="app.citizen_project.manager"/>
         </service>

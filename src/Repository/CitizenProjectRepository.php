@@ -95,6 +95,6 @@ class CitizenProjectRepository extends BaseGroupRepository
             ->setMaxResults($search->getMaxResults())
             ->getQuery()
             ->getResult()
-            ;
+        ;
     }
 }
