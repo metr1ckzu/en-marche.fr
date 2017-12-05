@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Algolia\AlgoliaSearchBundle\Mapping\Annotation as Algolia;
+use AppBundle\Collection\AdherentCollection;
 use AppBundle\Exception\CitizenProjectAlreadyApprovedException;
 use Doctrine\ORM\Mapping as ORM;
 use libphonenumber\PhoneNumber;
@@ -109,8 +110,10 @@ class CitizenProject extends BaseGroup
 
     /**
      * A cached list of the administrators (for admin).
+     *
+     * @var AdherentCollection|null
      */
-    public $administrators = [];
+    private $administrators;
 
     /**
      * @var Adherent|null
@@ -375,5 +378,18 @@ class CitizenProject extends BaseGroup
     public function getCreator(): ?Adherent
     {
         return $this->creator;
+    }
+
+    /**
+     * @return AdherentCollection
+     */
+    public function getAdministrators(): ?AdherentCollection
+    {
+        return $this->administrators;
+    }
+
+    public function setAdministrators(AdherentCollection $administrators): void
+    {
+        $this->administrators = $administrators;
     }
 }

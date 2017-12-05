@@ -18,13 +18,11 @@ class CitizenProjectSearchResultsProvider implements SearchResultsProviderInterf
 
     public function find(SearchParametersFilter $search): array
     {
-        $result = $this->citizenProjectRepository->searchAll($search);
+        $results = $this->citizenProjectRepository->searchAll($search);
 
-        foreach ($result as $citizenProject) {
-            $citizenProject->setCreator($this->citizenProjectManager->getCitizenProjectCreator($citizenProject));
-        }
+        $this->citizenProjectManager->injectCitizenProjectCreator($results);
 
-        return $result;
+        return $results;
     }
 
     public function getSupportedTypeOfSearch(): string
