@@ -102,7 +102,7 @@ class CitizenProject extends BaseGroup
     /**
      * @var Skill[]|Collection
      *
-     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\CitizenProjectSkill")
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\CitizenProjectSkill", cascade={"persist"})
      * @ORM\JoinTable(
      *     name="citizen_projects_skills",
      *     joinColumns={
@@ -350,7 +350,8 @@ class CitizenProject extends BaseGroup
         string $problemDescription,
         string $proposedSolution,
         string $requiredMeans,
-        NullablePostAddress $address
+        NullablePostAddress $address,
+        iterable $skills
     ): void {
         $this->setName($name);
         $this->setSubtitle($subtitle);
@@ -360,6 +361,7 @@ class CitizenProject extends BaseGroup
         $this->setProblemDescription($problemDescription);
         $this->setProposedSolution($proposedSolution);
         $this->setRequiredMeans($requiredMeans);
+        $this->setSkills($skills->toArray());
 
         if (null === $this->postAddress || !$this->postAddress->equals($address)) {
             $this->postAddress = $address;
@@ -384,5 +386,35 @@ class CitizenProject extends BaseGroup
     public function getCreator(): ?Adherent
     {
         return $this->creator;
+    }
+
+    /**
+     * @return CitizenProjectSkill[]|Collection
+     */
+    public function getSkills(): Collection
+    {
+        return $this->skills;
+    }
+
+    public function setSkills(iterable $skills): void
+    {
+        foreach ($skills as $skill) {
+            if (!$skill instanceof CitizenProjectSkill) {
+                throw new \InvalidArgumentException('Invalid argument type, require CitizenProjectSkill');
+            }
+            $this->addSkill($skill);
+        }
+    }
+
+    public function addSkill(CitizenProjectSkill $citizenProjectSkill): void
+    {
+        if (!$this->skills->contains($citizenProjectSkill)) {
+            $this->skills->add($citizenProjectSkill);
+        }
+    }
+
+    public function removeSkill(CitizenProjectSkill $citizenProjectSkill): void
+    {
+        $this->skills->removeElement($citizenProjectSkill);
     }
 }
