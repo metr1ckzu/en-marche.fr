@@ -4,10 +4,11 @@ namespace AppBundle\Entity;
 
 use Algolia\AlgoliaSearchBundle\Mapping\Annotation as Algolia;
 use AppBundle\Exception\CitizenProjectAlreadyApprovedException;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use libphonenumber\PhoneNumber;
 use Ramsey\Uuid\UuidInterface;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -31,6 +32,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CitizenProject extends BaseGroup
 {
     use EntityNullablePostAddressTrait;
+    use SkillTrait;
 
     /**
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\CitizenProjectCategory")
@@ -98,19 +100,30 @@ class CitizenProject extends BaseGroup
     private $committee;
 
     /**
-     * @var UploadedFile|null
+     * @var Skill[]|Collection
      *
-     * @Assert\Image(
-     *     maxSize = "1M",
-     *     mimeTypes = {"image/jpeg", "image/png"},
+     * @ORM\ManyToMany(targetEntity="AppBundle\Entity\CitizenProjectSkill")
+     * @ORM\JoinTable(
+     *     name="citizen_projects_skills",
+     *     joinColumns={
+     *         @ORM\JoinColumn(name="citizen_project_id", referencedColumnName="id")
+     *     },
+     *     inverseJoinColumns={
+     *         @ORM\JoinColumn(name="citizen_project_skill_id", referencedColumnName="id")
+     *     }
      * )
      */
-    private $image;
+    private $skills;
 
     /**
      * A cached list of the administrators (for admin).
      */
     public $administrators = [];
+
+    /**
+     * @var Adherent|null
+     */
+    private $creator;
 
     public function __construct(
         UuidInterface $uuid,
@@ -120,6 +133,7 @@ class CitizenProject extends BaseGroup
         CitizenProjectCategory $category,
         ?Committee $committee,
         bool $assistanceNeeded = false,
+        ?string $assistanceContent = null,
         string $problemDescription = '',
         string $proposedSolution = '',
         string $requiredMeans = '',
@@ -149,6 +163,7 @@ class CitizenProject extends BaseGroup
         $this->postAddress = $address;
         $this->phone = $phone;
         $this->assistanceNeeded = $assistanceNeeded;
+        $this->assistanceContent = $assistanceContent;
         $this->status = $status;
         $this->membersCounts = $membersCount;
         $this->approvedAt = $approvedAt;
@@ -157,6 +172,7 @@ class CitizenProject extends BaseGroup
         $this->problemDescription = $problemDescription;
         $this->proposedSolution = $proposedSolution;
         $this->requiredMeans = $requiredMeans;
+        $this->skills = new ArrayCollection();
     }
 
     public function getPostAddress(): NullablePostAddress
@@ -177,6 +193,11 @@ class CitizenProject extends BaseGroup
     public function getGeocodableAddress(): string
     {
         return $this->postAddress ? $this->postAddress->getGeocodableAddress() : '';
+    }
+
+    public function setCategory(CitizenProjectCategory $category): void
+    {
+        $this->category = $category;
     }
 
     public function getCategory(): CitizenProjectCategory
@@ -271,7 +292,8 @@ class CitizenProject extends BaseGroup
         string $subtitle,
         CitizenProjectCategory $category,
         PhoneNumber $phone,
-        string $assistanceNeeded,
+        bool $assistanceNeeded,
+        ?string $assistanceContent,
         string $problemDescription,
         string $proposedSolution,
         string $requiredMeans,
@@ -287,6 +309,7 @@ class CitizenProject extends BaseGroup
             $category,
             $committee,
             $assistanceNeeded,
+            $assistanceContent,
             $problemDescription,
             $proposedSolution,
             $requiredMeans,
@@ -304,6 +327,8 @@ class CitizenProject extends BaseGroup
      * Marks this citizen project as approved.
      *
      * @param string $timestamp
+     *
+     * @throws \AppBundle\Exception\CitizenProjectAlreadyApprovedException
      */
     public function approved(string $timestamp = 'now'): void
     {
@@ -316,9 +341,25 @@ class CitizenProject extends BaseGroup
         $this->refusedAt = null;
     }
 
-    public function update(string $name, NullablePostAddress $address): void
-    {
+    public function update(
+        string $name,
+        string $subtitle,
+        CitizenProjectCategory $category,
+        bool $assistanceNeeded,
+        string $assistanceContent,
+        string $problemDescription,
+        string $proposedSolution,
+        string $requiredMeans,
+        NullablePostAddress $address
+    ): void {
         $this->setName($name);
+        $this->setSubtitle($subtitle);
+        $this->setCategory($category);
+        $this->setAssistanceNeeded($assistanceNeeded);
+        $this->setAssistanceContent($assistanceContent);
+        $this->setProblemDescription($problemDescription);
+        $this->setProposedSolution($proposedSolution);
+        $this->setRequiredMeans($requiredMeans);
 
         if (null === $this->postAddress || !$this->postAddress->equals($address)) {
             $this->postAddress = $address;
@@ -333,5 +374,15 @@ class CitizenProject extends BaseGroup
             'Expert web',
             'Professeur de maths',
         ];
+    }
+
+    public function setCreator(?Adherent $creator): void
+    {
+        $this->creator = $creator;
+    }
+
+    public function getCreator(): ?Adherent
+    {
+        return $this->creator;
     }
 }

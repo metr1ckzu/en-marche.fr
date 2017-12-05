@@ -41,13 +41,15 @@ class CitizenProjectFactory
             $data['category'],
             $data['committee'] ?? null,
             $data['assistance_needed'] ?? false,
+            $data['assistance_content'] ?? null,
             $data['problem_description'],
             $data['proposed_solution'],
             $data['required_means'],
             $phone,
             $data['address'],
             $data['slug'] ?? null,
-            $data['status'] ?? CitizenProject::PENDING
+            $data['status'] ?? CitizenProject::PENDING,
+            $data['skills'] ?? null
         );
 
         return $citizenProject;
@@ -69,6 +71,7 @@ class CitizenProjectFactory
             $command->category,
             $command->getPhone(),
             $command->assistanceNeeded,
+            $command->assistanceContent,
             $command->problemDescription,
             $command->proposedSolution,
             $command->requiredMeans,
