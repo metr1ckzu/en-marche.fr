@@ -25,7 +25,7 @@ class SearchController extends Controller
     {
         $request->query->set(SearchParametersFilter::PARAMETER_TYPE, SearchParametersFilter::TYPE_EVENTS);
 
-        $search = $this->getSearch($request);
+        $search = $this->get(SearchParametersFilter::class)->handleRequest($request);
         $user = $this->getUser();
         if ($user && in_array(EntityPostAddressTrait::class, class_uses($user))) {
             $search->setCity(sprintf('%s, %s', $user->getCityName(), $user->getCountryName()));
@@ -53,7 +53,7 @@ class SearchController extends Controller
     {
         $request->query->set(SearchParametersFilter::PARAMETER_TYPE, SearchParametersFilter::TYPE_COMMITTEES);
 
-        $search = $this->getSearch($request);
+        $search = $this->get(SearchParametersFilter::class)->handleRequest($request);
 
         try {
             $results = $this->get(SearchResultsProvidersManager::class)->find($search);
@@ -78,7 +78,7 @@ class SearchController extends Controller
 
         $request->query->set(SearchParametersFilter::PARAMETER_TYPE, SearchParametersFilter::TYPE_CITIZEN_PROJECTS);
 
-        $search = $this->getSearch($request);
+        $search = $this->get(SearchParametersFilter::class)->handleRequest($request);
 
         try {
             $results = $this->get(SearchResultsProvidersManager::class)->find($search);
@@ -99,7 +99,7 @@ class SearchController extends Controller
      */
     public function resultsAction(Request $request)
     {
-        $search = $this->getSearch($request);
+        $search = $this->get(SearchParametersFilter::class)->handleRequest($request);
 
         try {
             $results = $this->get(SearchResultsProvidersManager::class)->find($search);
@@ -112,13 +112,5 @@ class SearchController extends Controller
             'results' => $results ?? [],
             'errors' => $errors ?? [],
         ]);
-    }
-
-    private function getSearch(Request $request): SearchParametersFilter
-    {
-        return $this
-            ->get(\AppBundle\Search\SearchParametersFilter::class)
-            ->handleRequest($request)
-        ;
     }
 }
