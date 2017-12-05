@@ -11,7 +11,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class SearchController extends Controller
 {
@@ -32,7 +31,7 @@ class SearchController extends Controller
         }
 
         try {
-            $results = $this->get('app.search.search_results_provider')->find($search);
+            $results = $this->get('app.search.search_results_providers_manager')->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }
@@ -58,12 +57,12 @@ class SearchController extends Controller
         $search = $this->getSearch($request);
 
         try {
-            $results = $this->get('app.search.search_results_provider')->find($search);
+            $results = $this->get('app.search.search_results_providers_manager')->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }
 
-        return $this->render('search/search.html.twig', [
+        return $this->render('search/search_committees.html.twig', [
             'search_max_results' => $this->getParameter('search_max_results'),
             'search_type' => SearchParametersFilter::TYPE_COMMITTEES,
             'search' => $search,
@@ -76,11 +75,27 @@ class SearchController extends Controller
      * @Route("/projets-citoyens", name="app_search_citizen_projects")
      * @Method("GET")
      */
-    public function searchAction(Request $request): Response
+    public function searchCitizenProjectsAction(Request $request)
     {
         $this->disableInProduction();
 
-        return new Response();
+        $request->query->set(SearchParametersFilter::PARAMETER_TYPE, SearchParametersFilter::TYPE_CITIZEN_PROJECTS);
+
+        $search = $this->getSearch($request);
+
+        try {
+            $results = $this->get('app.search.search_results_providers_manager')->find($search);
+        } catch (GeocodingException $exception) {
+            $errors[] = $this->get('translator')->trans('search.geocoding.exception');
+        }
+
+        return $this->render('search/search_citizen_projects.html.twig', [
+            'search_max_results' => $this->getParameter('search_max_results'),
+            'search_type' => SearchParametersFilter::TYPE_CITIZEN_PROJECTS,
+            'search' => $search,
+            'results' => $results ?? [],
+            'errors' => $errors ?? [],
+        ]);
     }
 
     /**
@@ -92,7 +107,7 @@ class SearchController extends Controller
         $search = $this->getSearch($request);
 
         try {
-            $results = $this->get('app.search.search_results_provider')->find($search);
+            $results = $this->get('app.search.search_results_providers_manager')->find($search);
         } catch (GeocodingException $exception) {
             $errors[] = $this->get('translator')->trans('search.geocoding.exception');
         }
