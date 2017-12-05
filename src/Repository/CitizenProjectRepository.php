@@ -85,7 +85,7 @@ class CitizenProjectRepository extends BaseGroupRepository
 
         if (!empty($query = $search->getQuery())) {
             $qb->andWhere('n.name like :query');
-            $qb->setParameter('query', '%'.$query.'%');
+            $qb->setParameter('query', "%$query%");
         }
 
         return $qb

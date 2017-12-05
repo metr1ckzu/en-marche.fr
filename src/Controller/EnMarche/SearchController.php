@@ -38,8 +38,6 @@ class SearchController extends Controller
         }
 
         return $this->render('search/search_events.html.twig', [
-            'search_max_results' => $this->getParameter('search_max_results'),
-            'search_type' => SearchParametersFilter::TYPE_EVENTS,
             'event_categories' => $this->getDoctrine()->getRepository(EventCategory::class)->findAllEnabledOrderedByName(),
             'search' => $search,
             'results' => $results ?? [],
@@ -64,8 +62,6 @@ class SearchController extends Controller
         }
 
         return $this->render('search/search_committees.html.twig', [
-            'search_max_results' => $this->getParameter('search_max_results'),
-            'search_type' => SearchParametersFilter::TYPE_COMMITTEES,
             'search' => $search,
             'results' => $results ?? [],
             'errors' => $errors ?? [],
@@ -91,8 +87,6 @@ class SearchController extends Controller
         }
 
         return $this->render('search/search_citizen_projects.html.twig', [
-            'search_max_results' => $this->getParameter('search_max_results'),
-            'search_type' => SearchParametersFilter::TYPE_CITIZEN_PROJECTS,
             'search' => $search,
             'results' => $results ?? [],
             'errors' => $errors ?? [],
@@ -123,8 +117,8 @@ class SearchController extends Controller
     private function getSearch(Request $request): SearchParametersFilter
     {
         return $this
-            ->get('app.search.search_results_filter')
-            ->setMaxResults($this->getParameter('search_max_results'))
-            ->handleRequest($request);
+            ->get(\AppBundle\Search\SearchParametersFilter::class)
+            ->handleRequest($request)
+        ;
     }
 }

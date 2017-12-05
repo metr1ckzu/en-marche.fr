@@ -198,4 +198,19 @@ class SearchParametersFilter
     {
         $this->eventCategory = $eventCategory;
     }
+
+    public function isTypeCommittees(): bool
+    {
+        return self::TYPE_COMMITTEES === $this->getType();
+    }
+
+    public function isTypeEvents(): bool
+    {
+        return self::TYPE_EVENTS === $this->getType();
+    }
+
+    public function isTypeCitizenProjects(): bool
+    {
+        return self::TYPE_CITIZEN_PROJECTS === $this->getType();
+    }
 }

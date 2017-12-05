@@ -422,9 +422,13 @@
         </service>
 
         <!-- Search -->
-        <service id="app.search.search_results_filter" class="AppBundle\Search\SearchParametersFilter">
+        <service id="AppBundle\Search\SearchParametersFilter" shared="false">
             <argument type="service" id="app.geocoder"/>
             <argument type="service" id="cache.app"/>
+
+            <call method="setMaxResults">
+                <argument>%search_max_results%</argument>
+            </call>
         </service>
 
         <service id="AppBundle\Search\SearchResultsProvidersManager">
