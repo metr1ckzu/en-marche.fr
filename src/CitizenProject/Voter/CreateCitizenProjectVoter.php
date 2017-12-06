@@ -7,7 +7,7 @@ use AppBundle\CitizenProject\CitizenProjectPermissions;
 use AppBundle\Entity\Adherent;
 use AppBundle\Entity\CitizenProject;
 
-class AdministrateCitizenProjectVoter extends AbstractCitizenProjectVoter
+class CreateCitizenProjectVoter extends AbstractCitizenProjectVoter
 {
     private $manager;
 
@@ -16,17 +16,21 @@ class AdministrateCitizenProjectVoter extends AbstractCitizenProjectVoter
         $this->manager = $manager;
     }
 
-    protected function supports($attribute, $subject): bool
+    protected function supports($attribute, $subject)
     {
-        return CitizenProjectPermissions::ADMINISTRATE === $attribute && $subject instanceof CitizenProject;
+        return CitizenProjectPermissions::CREATE === $attribute;
     }
 
     protected function doVoteOnAttribute(string $attribute, Adherent $adherent, ?CitizenProject $citizenProject): bool
     {
-        if (!$citizenProject->isApproved()) {
-            return $adherent->getUuid()->toString() === $citizenProject->getCreatedBy();
+        if ($this->manager->isCitizenProjectAdministrator($adherent)) {
+            return false;
         }
 
-        return $this->manager->administrateCitizenProject($adherent, $citizenProject);
+        if ($this->manager->hasCitizenProjectInStatus($adherent, CitizenProjectManager::STATUS_NOT_ALLOWED_TO_CREATE)) {
+            return false;
+        }
+
+        return true;
     }
 }

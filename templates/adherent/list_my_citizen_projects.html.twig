@@ -1,0 +1,18 @@
+{% if citizen_projects|length < 1 %}
+    <div class="text--center">
+        <div class="text--body b__nudge--bottom-small">Rejoignez un projet citoyen<br>En Marche !</div>
+        <a class="btn btn--blue form--full" href="{{ path('app_search_citizen_projects') }}">Trouver un projet citoyen</a>
+    </div>
+{% else %}
+    <ul>
+        {% for citizen_project in citizen_projects %}
+            {# using the Adherent::isAdministratorOf() method instead of a voter below prevents unneeded SQL queries #}
+            <li class="bullet {{ app.user.administratorOf(citizen_project) ? 'bullet--own' : '' }}">
+                <a href="{{ path('app_citizen_project_show', {'slug': citizen_project.slug}) }}"
+                   title="{{ citizen_project.name }}">
+                    {{- citizen_project.name -}}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

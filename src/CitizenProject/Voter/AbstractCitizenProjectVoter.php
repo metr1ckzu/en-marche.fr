@@ -28,5 +28,5 @@ abstract class AbstractCitizenProjectVoter extends Voter
         return $this->doVoteOnAttribute($attribute, $adherent, $citizenProject);
     }
 
-    abstract protected function doVoteOnAttribute(string $attribute, Adherent $adherent, CitizenProject $citizenProject): bool;
+    abstract protected function doVoteOnAttribute(string $attribute, Adherent $adherent, ?CitizenProject $citizenProject): bool;
 }

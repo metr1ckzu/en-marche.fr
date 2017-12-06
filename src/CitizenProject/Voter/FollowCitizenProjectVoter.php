@@ -26,7 +26,7 @@ class FollowCitizenProjectVoter extends AbstractCitizenProjectVoter
         return in_array(strtoupper($attribute), $attributes, true) && $subject instanceof CitizenProject;
     }
 
-    protected function doVoteOnAttribute(string $attribute, Adherent $adherent, CitizenProject $citizenProject): bool
+    protected function doVoteOnAttribute(string $attribute, Adherent $adherent, ?CitizenProject $citizenProject): bool
     {
         if (!$citizenProject->isApproved()) {
             return false;

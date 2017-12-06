@@ -23,7 +23,7 @@ class ShowCitizenProjectVoter extends AbstractCitizenProjectVoter
         return parent::voteOnAttribute($attribute, $citizenProject, $token);
     }
 
-    protected function doVoteOnAttribute(string $attribute, Adherent $adherent, CitizenProject $citizenProject): bool
+    protected function doVoteOnAttribute(string $attribute, Adherent $adherent, ?CitizenProject $citizenProject): bool
     {
         return $citizenProject->isCreatedBy($adherent->getUuid());
     }
