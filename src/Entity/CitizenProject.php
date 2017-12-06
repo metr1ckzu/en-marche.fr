@@ -219,6 +219,9 @@ class CitizenProject extends BaseGroup
         return $this->phone;
     }
 
+    /**
+     * @return CitizenProjectCommitteeSupport[]|Collection
+     */
     public function getCommitteeSupports(): Collection
     {
         return $this->committeeSupports;
@@ -228,6 +231,16 @@ class CitizenProject extends BaseGroup
     {
         return $this->committeeSupports->filter(function (CitizenProjectCommitteeSupport $c) {
             return $c->isApprove();
+        });
+    }
+
+    /**
+     * @return CitizenProjectCommitteeSupport[]|Collection
+     */
+    public function getPendingCommitteeSupports(): Collection
+    {
+        return $this->committeeSupports->filter(function (CitizenProjectCommitteeSupport $c) {
+            return $c->isPending();
         });
     }
 

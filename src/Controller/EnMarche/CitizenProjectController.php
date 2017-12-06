@@ -77,4 +77,51 @@ class CitizenProjectController extends Controller
 
         return new JsonResponse($result ?? []);
     }
+
+    /**
+     * @Route("/mon-comite-soutien/{slug}", name="app_citizen_project_committee_support")
+     * @Method("GET")
+     */
+    public function committeeSupportAction(CitizenProject $citizenProject): Response
+    {
+        if (!$this->getUser()->isSupervisor()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $committeeManager = $this->get('app.committee.manager');
+        $flashMessage = sprintf('Le projet citoyen %s n\'a pas demandé votre soutient', $citizenProject->getName());
+
+        foreach ($citizenProject->getCommitteeSupports() as $committeeSupport) {
+            if (!$committeeManager->superviseCommittee($this->getUser(), $committeeSupport->getCommittee())) {
+                continue;
+            }
+
+            if ($committeeSupport->isApprove()) {
+                $flashMessage = sprintf('Votre comité %s soutient déjà le projet citoyen %s',
+                    $committeeSupport->getCommittee()->getName(),
+                    $citizenProject->getName()
+                );
+
+                break;
+            }
+
+            if ($committeeSupport->isPending()) {
+                $committeeSupport->approve();
+                $this->getDoctrine()->getManager()->persist($citizenProject);
+                $this->getDoctrine()->getManager()->flush();
+                $flashMessage = sprintf('Votre comité %s soutient maintenant le projet citoyen %s',
+                    $committeeSupport->getCommittee()->getName(),
+                    $citizenProject->getName()
+                );
+
+                break;
+            }
+        }
+
+        $this->addFlash('info', $flashMessage);
+
+        return $this->redirectToRoute('app_citizen_project_show', [
+            'slug' => $citizenProject->getSlug(),
+        ]);
+    }
 }
